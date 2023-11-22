@@ -1,95 +1,30 @@
-#!/bin/bash
-RED='\033[1;31m'
-GRN='\033[1;32m'
-BLU='\033[1;34m'
-YEL='\033[1;33m'
-PUR='\033[1;35m'
-CYAN='\033[1;36m'
-NC='\033[0m'
+from requests import get
+from colorama import *
+from random import randint as ri
 
-echo -e "${CYAN}*-------------------*---------------------*${NC}"
-echo -e "${YEL}* Protek Recycling - Skip MDM/Create User  *${NC}"
-echo -e "${RED}*        Modified by Wilton Ribeiro        *${NC}"
-echo -e "${RED}*    Created by SkipMDM.com/Phoenix Team   *${NC}"
-echo -e "${CYAN}*-------------------*---------------------*${NC}"
-echo ""
-PS3='Please enter your choice: '
-options=("Autoypass on Recovery" "Reboot")
-select opt in "${options[@]}"; do
-	case $opt in
-	"Autoypass on Recovery")
-		echo -e "${GRN}Bypass on Recovery"
-		if [ -d "/Volumes/Macintosh HD - Data" ]; then
-   			diskutil rename "Macintosh HD - Data" "Data"
-   			fi
-		echo -e "${GRN}Create a new user "
-        echo -e "${BLU}Press Enter to continue, Note: Leaving it blank will create an user automaticly by default named Protek "
-  		echo -e "Enter the username (Default: Protek)"
-		read realName
-  		realName="${realName:= Protek}"
-    	echo -e "${BLUE}Username ${RED}WRITE WITHOUT SPACES  ${GRN} (User: Protek)"
-      	read username
-		username="${username:=Protek}"
-  		echo -e "${BLUE}Enter the password (default: 1234) "
-    	read passw
-      	passw="${passw:=1234}"
-		dscl_path='/Volumes/Data/private/var/db/dslocal/nodes/Default' 
-        echo -e "${GREEN}Creating User "
-  		# Create user
-    	dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username"
-      	dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username" UserShell "/bin/zsh"
-	    dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username" RealName "$realName"
-	 	dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username" RealName "$realName"
-	    dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username" UniqueID "501"
-	    dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username" PrimaryGroupID "20"
-		mkdir "/Volumes/Data/Users/$username"
-	    dscl -f "$dscl_path" localhost -create "/Local/Default/Users/$username" NFSHomeDirectory "/Users/$username"
-	    dscl -f "$dscl_path" localhost -passwd "/Local/Default/Users/$username" "$passw"
-	    dscl -f "$dscl_path" localhost -append "/Local/Default/Groups/admin" GroupMembership $username
-		echo "0.0.0.0 deviceenrollment.apple.com" >>/Volumes/Macintosh\ HD/etc/hosts
-		echo "0.0.0.0 mdmenrollment.apple.com" >>/Volumes/Macintosh\ HD/etc/hosts
-		echo "0.0.0.0 iprofiles.apple.com" >>/Volumes/Macintosh\ HD/etc/hosts
-        echo -e "${GREEN}Successfully blocked host${NC}"
-		# echo "Remove config profile"
-		touch /Volumes/Data/private/var/db/.AppleSetupDone
-        rm -rf /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigHasActivationRecord
-	rm -rf /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigRecordFound
-	touch /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigProfileInstalled
-	touch /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigRecordNotFound
-	echo -e "${CYAN}------ Autobypass SUCCESSFULLY - Reboot machine  ------${NC}"
-	echo -e "${CYAN}------ Exit Terminal , Reset Macbook and ENJOY ! ------${NC}"
-		break
-		;;
-    "Disable Notification (SIP)")
-    	echo -e "${RED}Please Insert Your Password To Proceed${NC}"
-        sudo rm /var/db/ConfigurationProfiles/Settings/.cloudConfigHasActivationRecord
-        sudo rm /var/db/ConfigurationProfiles/Settings/.cloudConfigRecordFound
-        sudo touch /var/db/ConfigurationProfiles/Settings/.cloudConfigProfileInstalled
-        sudo touch /var/db/ConfigurationProfiles/Settings/.cloudConfigRecordNotFound
-        break
-        ;;
-    "Disable Notification (Recovery)")
-        rm -rf /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigHasActivationRecord
-	rm -rf /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigRecordFound
-	touch /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigProfileInstalled
-	touch /Volumes/Macintosh\ HD/var/db/ConfigurationProfiles/Settings/.cloudConfigRecordNotFound
+def main():
+    print(f' {Fore.CYAN}[{Fore.GREEN}-{Fore.CYAN}]{Fore.MAGENTA}  How much times do you want to try and generate a random code?: {Fore.CYAN}')
+    amount = int(input(f'   '))
+    print(f' {Fore.CYAN}[{Fore.GREEN}-{Fore.CYAN}]{Fore.MAGENTA}  Do you also want to log invalid codes? [Y/N]: {Fore.CYAN}')
+    logyon = str(input(f'   '))
+    print(f'{Fore.RESET}')
 
-        break
-        ;;
-	"Check MDM Enrollment")
-		echo ""
-		echo -e "${GRN}Check MDM Enrollment. Error is success${NC}"
-		echo ""
-		echo -e "${RED}Please Insert Your Password To Proceed${NC}"
-		echo ""
-		sudo profiles show -type enrollment
-		break
-		;;
-		"Exit")
- 		echo "Rebooting..."
-		reboot
-		break
-		;;
-	*) echo "Invalid option $REPLY" ;;
-	esac
-done
+    if logyon == 'y' or logyon == 'Y':
+        logyon = True
+
+    for i in range(int(amount)):
+        id = ri(1000000000, 9999999999)
+        url = f'https://us06web.zoom.us/j/7616891834?pwd=Z8tSjkGTVv0BdPMJ4ljutpszO0TspZ.1'
+
+        r = get(url)
+
+        if 'This meeting link is invalid' in str(r.content):
+            print(f' {Fore.CYAN}[{Fore.GREEN}-{Fore.CYAN}]{Fore.MAGENTA}  Found the meeting {Fore.CYAN}{url}{Fore.MAGENTA}!{Fore.RESET}')
+
+        else:
+            if logyon == True:
+                print(f'{Fore.RED} [-]  Invalid meeting: {url}{Fore.RESET}')
+
+if __name__ == '__main__':
+    init(convert=True)
+    main()
